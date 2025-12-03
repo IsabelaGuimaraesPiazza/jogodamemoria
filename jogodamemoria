@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Memória</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+    }
+    .card {
+      width: 80px;
+      height: 80px;
+      background: #3498db;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transform: rotateY(0);
+      transition: transform 0.3s;
+    }
+    .card.flipped {
+      background: #2ecc71;
+    }
+    @media (max-width: 500px) {
+      #game {
+        grid-template-columns: repeat(3, 80px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Jogo da Memória</h1>
+  <p>Encontre todos os pares!</p>
+  <div id="game"></div>
+
+  <script>
+    const emojis = ["🍎","🍌","🍇","🍓","🍒","🍍","🥝","🍑"];
+    let cards = [...emojis, ...emojis]; // duplicar para pares
+    let firstCard = null;
+    let lockBoard = false;
+
+    // embaralhar
+    cards.sort(() => Math.random() - 0.5);
+
+    const game = document.getElementById("game");
+
+    cards.forEach(emoji => {
+      const card = document.createElement("div");
+      card.classList.add("card");
+      card.dataset.emoji = emoji;
+      card.innerHTML = "?";
+      game.appendChild(card);
+
+      card.addEventListener("click", () => {
+        if (lockBoard || card.classList.contains("flipped")) return;
+
+        card.innerHTML = emoji;
+        card.classList.add("flipped");
+
+        if (!firstCard) {
+          firstCard = card;
+        } else {
+          if (firstCard.dataset.emoji === card.dataset.emoji) {
+            firstCard = null;
+          } else {
+            lockBoard = true;
+            setTimeout(() => {
+              firstCard.innerHTML = "?";
+              card.innerHTML = "?";
+              firstCard.classList.remove("flipped");
+              card.classList.remove("flipped");
+              firstCard = null;
+              lockBoard = false;
+            }, 1000);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
